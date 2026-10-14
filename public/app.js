@@ -55,9 +55,11 @@ function setLive(ok, t) {
   l.className = `age ${ok ? (old ? 'old' : 'ok') : 'old'}`;
   l.textContent = ok ? `Datos ${fTime.format(t)}` : 'Sin conexión';
 }
+// '' on Cloudflare, '/aureo' when served from a subfolder (GitHub Pages): app paths stay '/oro', URLs get the prefix
+const BASE = new URL('.', document.currentScript?.src ?? location.href).pathname.replace(/\/$/, '');
 async function api(path, opts) {
   let r;
-  try { r = await fetch(path, opts); } catch { setLive(false); throw new Error('sin conexión'); }
+  try { r = await fetch(BASE + path, opts); } catch { setLive(false); throw new Error('sin conexión'); }
   const j = await r.json().catch(() => ({ ok: false, error: `HTTP ${r.status}` }));
   if (!j.ok) throw new Error(j.error || `HTTP ${r.status}`);
   if (j.at) setLive(true, j.at);
@@ -267,7 +269,7 @@ function setTopPrice(price, d1) {
 function render() {
   cleanups.forEach((f) => { try { f(); } catch { /* already gone */ } });
   cleanups = [];
-  const path = location.pathname.replace(/\/+$/, '') || '/';
+  const path = location.pathname.slice(BASE.length).replace(/\/+$/, '') || '/';
   const view = $('#view');
   view.innerHTML = '';
   const a = path.match(/^\/a\/([^/]+)$/);
@@ -280,7 +282,7 @@ function render() {
   else view.innerHTML = '<div class="page-head"><div><h1>No existe esta página</h1><p><a href="/" data-link>Volver a Hoy</a></p></div></div>';
   document.title = (a ? decodeURIComponent(a[1]).toUpperCase() : route?.[1] ?? 'Aureo') + ' · Aureo';
 }
-function go(path) { if (path !== location.pathname + location.hash) history.pushState(null, '', path); render(); window.scrollTo(0, 0); $('#view').focus({ preventScroll: true }); }
+function go(path) { if (BASE + path !== location.pathname + location.hash) history.pushState(null, '', BASE + path); render(); window.scrollTo(0, 0); $('#view').focus({ preventScroll: true }); }
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[href^="/"]');
   if (!a || e.ctrlKey || e.metaKey || e.shiftKey || a.target) return;
@@ -596,7 +598,7 @@ function pageGold(view) {
     $('#g-read').innerHTML = '';
     fn(body, (txt) => { $('#g-read').innerHTML = ecam('Lectura', txt); }).catch((e) => { body.innerHTML = `<p class="err c12">No se pudo cargar: ${esc(e.message)}</p>`; });
   };
-  $$('[data-ch]', view).forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); history.replaceState(null, '', '/oro#' + a.dataset.ch); show(); }));
+  $$('[data-ch]', view).forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); history.replaceState(null, '', BASE + '/oro#' + a.dataset.ch); show(); }));
   show();
 }
 
