@@ -1,0 +1,17 @@
+{
+  "name": "lingote",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8788",
+    "deploy": "wrangler deploy",
+    "test": "node --test",
+    "backfill": "node scripts/backfill.mjs",
+    "sync": "node scripts/sync.mjs",
+    "backtest": "node scripts/backtest.mjs",
+    "factors": "node scripts/factors-backtest.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

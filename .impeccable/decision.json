@@ -1,0 +1,87 @@
+{
+  "title": "Elige el mundo visual de Lingote",
+  "question": "La tirada ha asignado el Boletín de predicción. Quédatelo, elige una alternativa o vuelve a tirar.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Boletín de predicción",
+      "kicker": "LA TIRADA",
+      "lineage": "Boletines de AEMET y ECMWF: avisos por colores, meteogramas y conos de incertidumbre",
+      "thesis": "El oro se pronostica como el tiempo: probabilidades, avisos y una nota de acierto en cada predicción.",
+      "palette": ["#EDF0EA", "#132029", "#2E5C86", "#B8862B", "#E2B21C", "#D9701C", "#C2361F"],
+      "materials": ["papel de carta sinóptica", "isolíneas finas", "avisos amarillo, naranja y rojo", "meteograma de paneles apilados"],
+      "viewport": "A la izquierda, una escala vertical de precios con los niveles como isobaras y el precio como estación marcada. A la derecha, el parte del día: escenarios como cono de probabilidad, aviso del próximo dato y nota de acierto de cada factor.",
+      "risk": "Si la metáfora del tiempo se vuelve literal (iconos de nubes, mapas) parece un juguete; el sistema son sus gráficos, no su clima.",
+      "raised": [
+        {"from": "challenger-transit", "raise": "En el móvil solo se enfoca el tramo de niveles cercano al precio, sin encoger la escala entera hasta hacerla ilegible."},
+        {"from": "challenger-monochrome", "raise": "Cada frase de lectura va pegada a la cifra o al gráfico que la demuestra, nunca suelta."},
+        {"from": "challenger-darkroom", "raise": "Los factores en conflicto y los niveles débiles se marcan con trama, no solo con color, para que se lean en gris."}
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "Escala de precios de aviónica",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Cinta de altitud del PFD y escalera de profundidad (DOM) de las plataformas de futuros",
+      "thesis": "El precio vive en una cinta vertical que corre; los niveles son marcas fijadas y los escenarios, el director de vuelo.",
+      "palette": ["#0B0E11", "#E8E4D8", "#F0A23A", "#D24FAE", "#3FB37F"],
+      "materials": ["cristal de cabina", "cintas que se desplazan", "marcas magenta", "cifras de instrumento"],
+      "viewport": "Cinta de precio a pantalla completa en el centro, con el precio en una ventana de lectura y los niveles como marcas a su lado.",
+      "risk": "Es lo más cercano a una terminal de trading oscura: muchas plataformas acaban aquí."
+    },
+    {
+      "id": "challenger-transit",
+      "label": "Plano de metro nocturno",
+      "verdict": "declined",
+      "lineage": "Diagramas de transporte esmaltados",
+      "thesis": "Los escenarios como líneas que salen del precio y paran en cada nivel.",
+      "palette": ["#14213D", "#F4F1EA", "#D6382C", "#2F6FD1", "#E9A53B"],
+      "materials": ["esmalte azul", "líneas a 45 y 90 grados", "intercambiadores"],
+      "viewport": "El precio como estación central y dos líneas, alcista y bajista, con sus paradas.",
+      "case": "Funde bien con los escenarios, pero un trader no se reconoce en un plano de metro.",
+      "kept": "Enfocar el tramo elegido sin encoger el mapa entero.",
+      "risk": "Convierte una herramienta de precio en una infografía.",
+      "hero": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-midnight-transit-diagram-hero.webp"
+    },
+    {
+      "id": "challenger-monochrome",
+      "label": "Producto monocromo",
+      "verdict": "declined",
+      "lineage": "Webs de producto de software en una escala de grises",
+      "thesis": "Cada afirmación seguida de la pantalla que la demuestra.",
+      "palette": ["#FAFAFA", "#0A0A0A", "#6B6B6B", "#3B5BDB"],
+      "materials": ["escala neutra", "capturas sobre fondos suaves"],
+      "viewport": "Afirmación y prueba alternadas en columnas.",
+      "case": "Es lenguaje de página de venta, no de herramienta que se mira de reojo.",
+      "kept": "Afirmación y prueba siempre juntas.",
+      "risk": "Pierde densidad para operar.",
+      "hero": "https://impeccable.style/worlds/cards/digital-design-canon-monochrome-product-marketing-hero.webp"
+    },
+    {
+      "id": "challenger-darkroom",
+      "label": "Registro de exposición",
+      "verdict": "declined",
+      "lineage": "Fichas de laboratorio fotográfico con escala de zonas",
+      "thesis": "Zonas de precio como zonas de exposición, con trama para el conflicto.",
+      "palette": ["#E9E6DF", "#1C1B1A", "#7A7770", "#C2185B"],
+      "materials": ["papel vegetal", "tramas", "escala de 11 zonas"],
+      "viewport": "Hojas translúcidas superpuestas sobre una escala de zonas.",
+      "case": "Sistema brillante, pero ajeno al mundo del trader.",
+      "kept": "El conflicto se lee sin color, con trama.",
+      "risk": "Críptico para quien no conoce el laboratorio.",
+      "hero": "https://impeccable.style/worlds/cards/operate-b-exposure-record-zone-sheets-hero.webp"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code"},
+  "canon": true,
+  "canonCard": {
+    "label": "Terminal de trading estándar",
+    "thesis": "Lo que hace la categoría: terminal oscura tipo TradingView, bien ejecutada.",
+    "palette": ["#131722", "#D1D4DC", "#2962FF", "#26A69A", "#EF5350"],
+    "materials": ["paneles oscuros", "rejilla densa", "verde y rojo"],
+    "viewport": "Gráfico grande arriba, widgets en rejilla debajo.",
+    "risk": "Indistinguible de la competencia, por diseño."
+  },
+  "steer": true
+}

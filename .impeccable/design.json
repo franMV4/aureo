@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T08:00:00Z",
+  "title": "Design System: Lingote",
+  "extensions": {
+    "colorMeta": {
+      "gold": { "role": "primary", "displayName": "Oro", "canonical": "#e6b450" },
+      "blue": { "role": "primary", "displayName": "Azul tuyo", "canonical": "#0a84ff" },
+      "green": { "role": "secondary", "displayName": "Verde sube", "canonical": "#30d158" },
+      "red": { "role": "secondary", "displayName": "Rojo baja", "canonical": "#ff453a" },
+      "orange": { "role": "secondary", "displayName": "Naranja precaución", "canonical": "#ff9f0a" },
+      "ground": { "role": "neutral", "displayName": "Grafito", "canonical": "#0a0b0f" }
+    },
+    "shadows": [
+      { "name": "glass", "value": "inset 0 0 0 1px rgba(255,255,255,.085), inset 0 1px 0 rgba(255,255,255,.1), 0 12px 32px rgba(0,0,0,.35)", "purpose": "Borde de luz, reflejo y sombra de todo el vidrio." }
+    ],
+    "motion": [
+      { "name": "state", "value": "0.15s", "purpose": "Hover de filas y controles." },
+      { "name": "help-in", "value": "0.18s ease-out, translateY(-4px) a 0", "purpose": "Aparición de la ayuda." }
+    ],
+    "breakpoints": [
+      { "name": "single-column", "value": "1180px" },
+      { "name": "mobile-chrome", "value": "900px" },
+      { "name": "phone", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Panel de vidrio",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Panel con título y lecturas sin caja.",
+      "html": "<section class=\"ds-panel\"><h2>Riesgo de hoy</h2><div class=\"ds-ro\"><span>Movimiento esperado</span><b>±46 $</b><small>17,4 % anual · GARCH</small></div></section>",
+      "css": ".ds-panel{background:rgba(30,32,40,.55);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.085),inset 0 1px 0 rgba(255,255,255,.1),0 12px 32px rgba(0,0,0,.35);border-radius:20px;padding:18px 20px 20px;color:#f2f2f5;font:14px/1.55 -apple-system,'Segoe UI Variable Text','Segoe UI',system-ui,sans-serif}.ds-panel h2{margin:0 0 14px;font-size:15px;font-weight:600}.ds-ro{padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}.ds-ro span{display:block;font-size:12px;font-weight:500;color:#a1a1aa}.ds-ro b{display:block;margin-top:4px;font-size:22px;font-weight:600;letter-spacing:-.02em}.ds-ro small{display:block;margin-top:4px;font-size:12px;color:#8a8a94}"
+    },
+    {
+      "name": "Control",
+      "kind": "button",
+      "refersTo": "control",
+      "description": "Cápsula de vidrio; seleccionada en azul.",
+      "html": "<button class=\"ds-ctl\">Todos</button> <button class=\"ds-ctl\" aria-pressed=\"true\">Metales</button>",
+      "css": ".ds-ctl{height:34px;padding:0 16px;border:0;border-radius:999px;background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.085);color:#a1a1aa;font:500 13px -apple-system,'Segoe UI',system-ui,sans-serif;cursor:pointer;transition:background .15s,color .15s}.ds-ctl:hover{background:rgba(255,255,255,.075);color:#f2f2f5}.ds-ctl[aria-pressed=true]{background:#0a84ff;color:#fff}.ds-ctl:focus-visible{outline:2px solid #0a84ff;outline-offset:2px}"
+    },
+    {
+      "name": "Acción principal",
+      "kind": "button",
+      "refersTo": "action-primary",
+      "description": "Cápsula azul sólida.",
+      "html": "<button class=\"ds-go\">Guardar plan</button>",
+      "css": ".ds-go{height:34px;padding:0 16px;border:0;border-radius:999px;background:#0a84ff;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.1);font:600 13px -apple-system,'Segoe UI',system-ui,sans-serif;cursor:pointer}.ds-go:hover{background:#2a94ff}.ds-go:focus-visible{outline:2px solid #0a84ff;outline-offset:2px}"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Campo de vidrio interior con foco azul.",
+      "html": "<label class=\"ds-field\">Entrada<span><input value=\"4173,6\"></span></label>",
+      "css": ".ds-field{display:grid;gap:6px;font:500 12px -apple-system,'Segoe UI',system-ui,sans-serif;color:#a1a1aa}.ds-field span{display:flex;height:40px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.085)}.ds-field span:focus-within{box-shadow:inset 0 0 0 1px #0a84ff,0 0 0 3px rgba(10,132,255,.25)}.ds-field input{flex:1;background:transparent;border:0;outline:0;color:#f2f2f5;font:600 15px -apple-system,'Segoe UI',system-ui,sans-serif}"
+    },
+    {
+      "name": "Tarjeta de estado",
+      "kind": "custom",
+      "description": "Etiqueta, valor y nota.",
+      "html": "<div class=\"ds-tile\"><span>Régimen</span><b>Calma</b><small>76 % · vol. 17,4 % anual</small></div>",
+      "css": ".ds-tile{width:220px;border-radius:18px;padding:14px 16px 15px;background:rgba(30,32,40,.55);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.085),inset 0 1px 0 rgba(255,255,255,.1);color:#f2f2f5;font-family:-apple-system,'Segoe UI',system-ui,sans-serif}.ds-tile span{display:block;font-size:12px;font-weight:500;color:#a1a1aa}.ds-tile b{display:block;margin-top:6px;font-size:19px;font-weight:600}.ds-tile small{display:block;margin-top:4px;font-size:12px;color:#8a8a94}"
+    },
+    {
+      "name": "Etiqueta de aviso",
+      "kind": "chip",
+      "description": "Cápsula tintada: palabra y color.",
+      "html": "<span class=\"ds-lvl hi\">Alto</span> <span class=\"ds-lvl md\">Medio</span>",
+      "css": ".ds-lvl{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font:600 11px -apple-system,'Segoe UI',system-ui,sans-serif}.ds-lvl.hi{background:rgba(255,159,10,.15);color:#ff9f0a}.ds-lvl.md{background:rgba(255,255,255,.045);color:#a1a1aa}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La mesa de vidrio",
+    "overview": "Paneles de vidrio esmerilado oscuro flotan sobre un fondo grafito iluminado por dos luces suaves, oro arriba a la izquierda y azul abajo a la derecha. Esas luces son lo que el vidrio refracta y dan profundidad sin decorar. Es una aproximación web al Liquid Glass de Apple (con backdrop-filter, bordes de luz y reflejo superior), no el material oficial. La jerarquía se lee desde lejos: página, sección, título de panel con icono, cifra, etiqueta y nota. Cada nivel cambia de tamaño o de tono lo bastante para no confundirse con el siguiente. Las cifras mandan; las etiquetas acompañan.",
+    "keyCharacteristics": [
+      "Tres niveles de vidrio: panel, cromo (barra lateral, cabecera y pestañas) e interior (controles y campos).",
+      "Color con significado fijo en la paleta de sistema de Apple: oro para la marca y los niveles calculados, azul para lo tuyo, verde sube, rojo baja y naranja precaución.",
+      "Tipografía del sistema: SF Pro en Apple y Segoe UI Variable en Windows.",
+      "Gráfico de velas con eje de precios estrecho, como TradingView."
+    ],
+    "rules": [
+      { "name": "The Meaning Rule", "body": "Un color con tono significa siempre lo mismo; sin significado, el elemento va en tinta.", "section": "colors" },
+      { "name": "The Blue Is Yours Rule", "body": "El azul es solo para lo que el usuario elige o escribe.", "section": "colors" },
+      { "name": "The Figure First Rule", "body": "En una lectura, la cifra es al menos 1,8 veces la etiqueta y va en tinta plena; la etiqueta nunca compite con ella.", "section": "typography" },
+      { "name": "The No Nested Glass Rule", "body": "Dentro de un panel no hay otra tarjeta. Las lecturas se separan con un filete superior y los escenarios con una línea entre ellos.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do separar los grupos con títulos de sección y 34px de aire.",
+      "Do dar a cada cifra al menos 1,8 veces el tamaño de su etiqueta.",
+      "Do mantener el respaldo opaco para prefers-reduced-transparency.",
+      "Do fijar el alto de todo gráfico de velas."
+    ],
+    "donts": [
+      "Don't poner una tarjeta dentro de otra ni franjas de color laterales.",
+      "Don't usar sombras de color o halos; la sombra es siempre negra y difusa.",
+      "Don't usar etiquetas en mayúsculas encima de los títulos.",
+      "Don't usar el azul para algo que no haya elegido el usuario."
+    ]
+  }
+}

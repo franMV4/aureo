@@ -1,0 +1,21 @@
+name = "lingote"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "./public"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+
+# Local dev works with this placeholder. Before deploying: `npx wrangler d1 create lingote` and paste the id here.
+[[d1_databases]]
+binding = "DB"
+database_name = "lingote"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# One dispatcher every 15 minutes decides which sources are due (see worker.js scheduled()).
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Optional secrets (wrangler secret put ...): TELEGRAM_TOKEN, TELEGRAM_CHAT
+# WRITE_OPEN = "1" in .dev.vars lets the journal/levels be written without Cloudflare Access (local only).
