@@ -204,11 +204,13 @@ export function bias(x) {
 }
 
 // "2026-10-14" + "08:30" in America/New_York -> epoch seconds (DST-correct via Intl).
+const zoneFmt = new Map(); // Intl formatters are slow to build; one per time zone (Worker CPU limit)
 export function zonedToUtc(dateIso, hhmm, tz = 'America/New_York') {
+  if (!zoneFmt.has(tz)) zoneFmt.set(tz, new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }));
   const [y, m, d] = dateIso.split('-').map(Number), [H, M] = hhmm.split(':').map(Number);
   let t = Date.UTC(y, m - 1, d, H, M);
   for (let i = 0; i < 2; i++) {
-    const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(t).map((x) => [x.type, x.value]));
+    const p = Object.fromEntries(zoneFmt.get(tz).formatToParts(t).map((x) => [x.type, x.value]));
     t += Date.UTC(y, m - 1, d, H, M) - Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute);
   }
   return t / 1000;

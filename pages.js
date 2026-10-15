@@ -12,7 +12,8 @@ import { align3, moves, fitBetas, attribute, vqBand } from './vq.js';
 
 const vals = (rows) => rows.map((r) => r.v);
 const chg = (rows, n) => (rows.length > n ? A.pct(rows.at(-1 - n).v, rows.at(-1).v) : null);
-const nyDate = (t) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(t);
+const NY = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' });
+const nyDate = (t) => NY.format(t);
 const addDays = (d, n) => new Date(Date.parse(d + 'T12:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 const safe = async (p, d = null) => { try { return await p; } catch { return d; } };
 
@@ -231,9 +232,11 @@ export async function candles(db, sym, tf) {
     bars = (await yahooBars(sym, range, interval)).filter((b) => b.o != null);
     if (agg > 1) {
       // buckets start at the 18:00 New York open, like MT5 / TradingView, not at UTC midnight
-      const by = new Map(), w = agg * 3600;
+      const by = new Map(), w = agg * 3600, st0 = new Map();
+      // ponytail: one session lookup per UTC day; the 18:00 NY offset only moves at DST changes
+      const stOf = (t) => { const d = Math.floor(t / 86400); if (!st0.has(d)) st0.set(d, session(t * 1000).start / 1000); return st0.get(d); };
       for (const b of bars) {
-        const st = session(b.t * 1000).start / 1000, k = st + Math.floor((b.t - st) / w) * w, x = by.get(k);
+        const st = stOf(b.t), k = st + Math.floor((b.t - st) / w) * w, x = by.get(k);
         by.set(k, x ? { t: k, o: x.o, h: Math.max(x.h, b.h), l: Math.min(x.l, b.l), c: b.c } : { ...b, t: k });
       }
       bars = [...by.values()];
@@ -288,8 +291,8 @@ async function vq(db, c) {
   const m = moves(align3(g, d, z));
   if (m.length < 500) throw new Error('faltan velas de 15 minutos del oro, el dólar o el bono');
   const fit = fitBetas(m), half = Math.floor(m.length / 2);
-  const key = session(m.at(-1).t * 1000).date, day = m.filter((x) => session(x.t * 1000).date === key);
-  const path = attribute(day, fit), last = path.at(-1), open = g.find((b) => session(b.t * 1000).date === key)?.o ?? g.at(-1).c;
+  const ses = session(m.at(-1).t * 1000), key = ses.date, day = m.filter((x) => x.t * 1000 >= ses.start);
+  const path = attribute(day, fit), last = path.at(-1), open = g.find((b) => b.t * 1000 >= ses.start)?.o ?? g.at(-1).c;
   const sigma = q.data.garch.next; // % per day
   const score = Math.max(-100, Math.min(100, Math.round((100 * last.own) / sigma)));
   return {
