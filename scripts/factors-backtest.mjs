@@ -50,4 +50,4 @@ for (const [k, v] of [...Object.entries(result.factors), ['total', result.total]
 
 mkdirSync('.wrangler', { recursive: true });
 writeFileSync('.wrangler/factors.sql', `INSERT OR REPLACE INTO kv (k, v, t) VALUES ('factors:backtest', '${JSON.stringify(result).replace(/'/g, "''")}', ${Date.now()});`);
-execSync(`npx wrangler d1 execute DB ${process.argv.includes('--remote') ? '--remote' : '--local'} --file .wrangler/factors.sql`, { stdio: 'inherit' });
+execSync(`npx wrangler d1 execute DB ${process.argv.includes('--remote') ? '--remote' : '--local'} --yes --file .wrangler/factors.sql`, { stdio: 'inherit' });

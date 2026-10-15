@@ -11,7 +11,7 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "lingote"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "45e68561-60f6-4527-9160-d17aae46875e"
 
 # One dispatcher every 15 minutes decides which sources are due (see worker.js scheduled()).
 [triggers]
