@@ -85,19 +85,27 @@ async function cot() {
   return s;
 }
 
-async function calendar() {
+// The week's calendar comes from D1, filled hourly by the cron job (which retries on its own).
+// Forex Factory answers 429 to Cloudflare's shared IPs too often to call it on every visit;
+// it is only fetched live when D1 has nothing for this week yet.
+async function calendar(env) {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  d.setUTCDate(d.getUTCDate() - d.getUTCDay()); // Forex Factory weeks run Sunday to Saturday
+  const rows = (await env.DB.prepare("SELECT t, country, title, impact, forecast, previous, actual FROM events WHERE id LIKE 'ff:%' AND t >= ? AND t < ? ORDER BY t").bind(d.getTime(), d.getTime() + 7 * 864e5).all()).results;
+  if (rows.length) return rows.map((e) => ({ title: e.title, country: e.country, date: new Date(e.t).toISOString(), impact: e.impact, forecast: e.forecast ?? '', previous: e.previous ?? '', actual: e.actual ?? '' }));
   const ev = await getJson('https://nfs.faireconomy.media/ff_calendar_thisweek.json');
   return ev.map(({ title, country, date, impact, forecast, previous, actual }) => ({ title, country, date, impact, forecast, previous, actual: actual ?? '' }));
 }
 
-async function news(ctx) {
+async function news(ctx, env) {
   const results = await Promise.allSettled(FEEDS.map(async ([name, url]) => {
     const r = await fetch(url, { headers: UA });
     if (!r.ok) throw new Error(`${name} ${r.status}`);
     return parseRss(await r.text(), name);
   }));
   let events = [];
-  try { events = await cached(ctx, 'calendar', 900, calendar); } catch { /* ranking works without it */ }
+  try { events = await cached(ctx, 'calendar', 900, () => calendar(env)); } catch { /* ranking works without it */ }
   const now = Date.now();
   const ew = eventWords(events.map((e) => ({ ...e, date: new Date(e.date).toISOString() })), now);
   const all = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))
@@ -113,8 +121,8 @@ const ROUTES = {
   '/api/gold': [15, () => gold()],
   '/api/quotes': [60, async () => ({ indices: await quotes(INDICES), macro: await quotes(MACRO) })],
   '/api/cot': [3600, () => cot()],
-  '/api/calendar': [900, () => calendar()],
-  '/api/news': [300, (ctx) => news(ctx)],
+  '/api/calendar': [900, (ctx, env) => calendar(env)],
+  '/api/news': [300, (ctx, env) => news(ctx, env)],
 };
 
 // Analysis modules: one memo per request so M1 can reuse M2..M11 without recomputing.
@@ -122,7 +130,7 @@ const ROUTES = {
 const MOD_V = 5;
 function moduleRunner(env, ctx) {
   const memo = new Map();
-  const c = { env, news: () => cached(ctx, 'news', 300, () => news(ctx)) };
+  const c = { env, news: () => cached(ctx, 'news', 300, () => news(ctx, env)) };
   c.get = (id) => {
     if (!memo.has(id)) memo.set(id, cached(ctx, `mod${MOD_V}-${id}`, TTL[id], () => MODULES[id](env.DB, c)));
     return memo.get(id);
@@ -239,7 +247,7 @@ export default {
     if (!route) return env.ASSETS.fetch(req);
     const [ttl, fn] = route;
     try {
-      const data = await cached(ctx, `${pathname.slice(5)}-v${MOD_V}`, ttl, () => fn(ctx));
+      const data = await cached(ctx, `${pathname.slice(5)}-v${MOD_V}`, ttl, () => fn(ctx, env));
       return json({ ok: true, at: Date.now(), data });
     } catch (e) {
       return json({ ok: false, error: e.message }, 502);
