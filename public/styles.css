@@ -383,7 +383,6 @@ table { border-collapse: collapse; width: 100%; }
   .tabbar a[aria-current='page'] i { color: var(--gold); }
   main { padding: 14px 12px 110px; }
   .page-head h1 { font-size: 22px; }
-  .syskeys { top: 74px; }
 }
 @media (max-width: 640px) {
   .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
