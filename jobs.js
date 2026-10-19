@@ -43,8 +43,14 @@ export async function alert(env, key, text) {
 }
 
 export const JOBS = {
+  // ponytail: the free plan allows 50 outbound requests per run, so each run refreshes a rotating slice of the
+  // symbols (gold always in it); every symbol is refreshed every ~45 min, enough for daily closes
   async quotes(env) {
-    await pool(YAHOO, 8, async (y) => {
+    const cur = (await st.kvGet(env.DB, 'quotes:cursor'))?.v ?? 0;
+    const rest = YAHOO.filter((y) => y.s !== 'GC=F');
+    const slice = [YAHOO.find((y) => y.s === 'GC=F'), ...Array.from({ length: QUOTES_PER_RUN - 1 }, (_, k) => rest[(cur + k) % rest.length])];
+    await st.kvSet(env.DB, 'quotes:cursor', (cur + QUOTES_PER_RUN - 1) % rest.length);
+    await pool(slice, 8, async (y) => {
       // self-healing: a new symbol loads its history, a gap of more than a few days refills a month
       const last = await st.lastObs(env.DB, `y:${y.s}`);
       const range = !last ? (y.long ? '2006-01-01' : '5y') : last.d >= st.daysAgo(5) ? '5d' : '1mo';
@@ -163,6 +169,11 @@ export const DERIVED = {
 };
 
 // minutes between runs; cot only matters around the Friday release
+export const QUOTES_PER_RUN = 18;
+// outbound requests each job makes (worst case); the dispatcher keeps every run under the plan's limit
+export const COST = { quotes: QUOTES_PER_RUN, bars: 1, moves: 0, alerts: 2, reports: 15, calendar: 1, fred: 24, cot: 10, gld: 1, statements: 5, journal: 0 };
+export const BUDGET = 45; // free Workers plan: 50 subrequests per invocation
+
 export const SCHEDULE = { quotes: 15, bars: 15, moves: 15, alerts: 15, reports: 15, calendar: 60, fred: 60, cot: 60, gld: 360, statements: 360, journal: 360 };
 export const isDue = (name, lastRun, now = Date.now()) => {
   if (name === 'cot' && ![5, 6, 1].includes(new Date(now).getUTCDay())) return false;

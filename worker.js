@@ -4,7 +4,7 @@ import { MODULES as BASE, TTL as BASE_TTL } from './modules.js';
 import { PAGES, PAGES_TTL, asset, candles } from './pages.js';
 
 const MODULES = { ...BASE, ...PAGES }, TTL = { ...BASE_TTL, ...PAGES_TTL };
-import { JOBS, DERIVED, isDue, alert } from './jobs.js';
+import { JOBS, DERIVED, isDue, alert, COST, BUDGET, SCHEDULE } from './jobs.js';
 import { kvGet, kvSet, health, iso } from './store.js';
 
 const UA = { 'User-Agent': 'Mozilla/5.0' };
@@ -133,13 +133,25 @@ function moduleRunner(env, ctx) {
 // Writes (journal, levels, manual jobs) need Cloudflare Access in production, or WRITE_OPEN=1 locally.
 const canWrite = (req, env) => env.WRITE_OPEN === '1' || !!req.headers.get('Cf-Access-Authenticated-User-Email');
 
+// Runs due jobs, most overdue first, without passing the plan's outbound-request budget per invocation.
+// What doesn't fit stays due and runs on the next tick, so slow jobs (fred, cot) can't be starved by quotes.
 async function runJobs(env, ctx, only) {
   const mod = moduleRunner(env, ctx);
   const done = [];
-  for (const name of [...Object.keys(JOBS), ...Object.keys(DERIVED)]) {
-    if (only && only !== 'all' && only !== name) continue;
+  const now = Date.now();
+  const names = [...Object.keys(JOBS), ...Object.keys(DERIVED)].filter((n) => !only || only === 'all' || only === n);
+  const due = [];
+  for (const name of names) {
     const last = (await kvGet(env.DB, `job:${name}`))?.v;
     if (!only && !isDue(name, last)) continue;
+    due.push({ name, lag: last ? (now - last) / (SCHEDULE[name] * 6e4) : Infinity });
+  }
+  due.sort((a, b) => b.lag - a.lag);
+  let left = only && only !== 'all' ? Infinity : BUDGET;
+  for (const { name } of due) {
+    const cost = COST[name] ?? 5;
+    if (cost > left) { done.push(`${name}: aplazado (sin cupo en esta pasada)`); continue; }
+    left -= cost;
     try {
       await (JOBS[name] ? JOBS[name](env) : DERIVED[name](env, mod));
       await kvSet(env.DB, `job:${name}`, Date.now());
